@@ -104,7 +104,6 @@ document.addEventListener("DOMContentLoaded", function() {
       q1.value = qty;
       document.getElementById('total').textContent = qty;
     }
-
     q1.addEventListener('input', updateTotal);
 
     document.getElementById('btnReset').addEventListener('click', ()=>{
@@ -119,33 +118,48 @@ document.addEventListener("DOMContentLoaded", function() {
       lines.push('---------------------------');
       lines.push('Rindfleischpakete: ' + (q1.value || '1') + ' Paket(e)');
       lines.push('');
-      lines.push('      lines.push('Name: ' + (document.getElementById('name').value || '-'));
+      lines.push('Name: ' + (document.getElementById('name').value || '-'));
       lines.push('Telefon: ' + (document.getElementById('phone').value || '-'));
       lines.push('E-Mail: ' + (document.getElementById('email').value || '-'));
       lines.push('Zahlung: Bar bei Abholung');
-      return lines.join("
-");
+      return lines.join("\n");
     }
 
     document.getElementById('btnPreview').addEventListener('click', ()=>{
       const txt = buildOrderText();
-      document.getElementById('orderPreview').innerHTML = `<div class="summary">${txt.replace(/
-/g,'<br>')}</div>`;
+      document.getElementById('orderPreview').innerHTML = `<div class="summary">${txt.replace(/\n/g,'<br>')}</div>`;
     });
 
-    function validate(){
-      if(!document.getElementById('name').value){alert('Bitte Name angeben.'); return false}
-      if(!document.getElementById('phone').value && !document.getElementById('email').value){alert('Bitte mindestens Telefon oder E-Mail angeben.'); return false}
-      return true;
-    }
-
+    // Replace mailto with FormSubmit form submission
     document.getElementById('btnSend').addEventListener('click', ()=>{
-      if(!validate()) return;
-      const to = 'hausmann.landwirtschaft@gmx.de';
-      const subject = encodeURIComponent('Vorbestellung Fleisch ab Hof - ' + (document.getElementById('name').value || ''));
-      const body = encodeURIComponent(buildOrderText());
-      const mailto = `mailto:${to}?subject=${subject}&body=${body}`;
-      window.location.href = mailto;
+      if(!document.getElementById('name').value){alert('Bitte Name angeben.'); return}
+      if(!document.getElementById('phone').value && !document.getElementById('email').value){alert('Bitte mindestens Telefon oder E-Mail angeben.'); return}
+
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = 'https://formsubmit.co/hausmann.landwirtschaft@gmx.de';
+
+      const fields = {
+        "Vorbestellung": buildOrderText(),
+        "Name": document.getElementById('name').value,
+        "Telefon": document.getElementById('phone').value,
+        "E-Mail": document.getElementById('email').value,
+        "Pakete": q1.value,
+        "_subject": "Ihre Vorbestellung – Fleisch ab Hof",
+        "_autoresponse": "Vielen Dank für Ihre Vorbestellung!\n\nWir haben Ihre Daten erhalten und melden uns, sobald die Pakete zur Abholung bereitstehen.\nDer endgültige Preis ergibt sich beim Abholen nach tatsächlichem Gewicht.\n\nHerzliche Grüße\nDiana Hausmann & Ole Kunzelmann",
+        "_template": "table"
+      };
+
+      for(const key in fields){
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = fields[key];
+        form.appendChild(input);
+      }
+
+      document.body.appendChild(form);
+      form.submit();
     });
 });
 </script>
