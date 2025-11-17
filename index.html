@@ -16,13 +16,14 @@
     .products ul{list-style:none;padding:0;margin:0}
     .prod{display:flex;align-items:center;justify-content:space-between;padding:10px 6px;border-bottom:1px dashed #eee}
     .prod:last-child{border-bottom:0}
-    input[type=number]{width:72px;padding:6px;border-radius:6px;border:1px solid #ddd}
+    input[type=number]{width:72px;padding:6px;border-radius:6px;border:1px solid #ddd;text-align:center} /* text-align:center hinzugefügt */
     input[type=text],input[type=email],input[type=tel]{width:100%;padding:8px;border-radius:8px;border:1px solid #ddd}
     .small{font-size:.9rem;color:#555}
     .total{font-size:1.2rem;font-weight:700;margin-top:12px}
-    button.primary{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;border:0;cursor:pointer}
+    button.primary{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;border:0;cursor:pointer;width:100%;font-size:1.1rem;margin-top:15px} /* Anpassung für volle Breite */
     .summary{font-family:monospace;background:#f3f3f3;padding:10px;border-radius:8px;white-space:pre-wrap;margin-top:10px}
-    footer{margin-top:18px;font-size:.9rem;color:#666}
+    footer{margin-top:18px;font-size:.9rem;color:#666;text-align:center}
+    .form-group{margin-bottom:12px} /* Hinzugefügt */
   </style>
 </head>
 <body>
@@ -35,13 +36,75 @@
     <form class="grid" action="https://formsubmit.co/hausmann.landwirtschaft@gmx.de" method="POST">
 
       <section class="card products">
-        <h2>Produkte & Menge</h2>
-        <p class="small">Bitte Anzahl der gewünschten Fleischpakete auswählen.</p>
+        <h2>Produkte & Menge 📦</h2>
+        <p class="small">Bitte Anzahl der gewünschten Fleischpakete auswählen. Die Abrechnung erfolgt nach dem tatsächlichen Gewicht.</p>
 
         <ul>
           <li class="prod">
             <div class="left">
               <label for="q1"><strong>Rindfleischpaket (ca. 10 kg)</strong></label>
-              <div class="small">Anzahl der Pakete</div>
+              <div class="small">Preis: $21,90$ € / kg. Fertigstellung: Mitte Dezember.</div>
             </div>
             <div>
+                <input type="number" id="q1" name="Rindfleischpaket_Anzahl" value="1" min="0" />
+            </div>
+          </li>
+          </ul>
+        
+        <div class="form-group" style="margin-top: 20px;">
+            <label for="anmerkung" style="font-weight: bold;">Anmerkungen zur Bestellung (optional):</label>
+            <textarea id="anmerkung" name="Anmerkungen" rows="3" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #ddd;"></textarea>
+        </div>
+        
+        <input type="hidden" name="_next" value="https://ihre-website.de/danke.html">
+        <input type="hidden" name="_subject" value="Neue Hofladen-Vorbestellung">
+
+      </section>
+
+      <aside class="card">
+        <h2>Ihre Kontaktdaten 📞</h2>
+        <p class="small">Wir kontaktieren Sie, sobald die Abholung bereitsteht.</p>
+        
+        <div class="form-group">
+            <label for="name">Name, Vorname*</label>
+            <input type="text" id="name" name="Name" required />
+        </div>
+        
+        <div class="form-group">
+            <label for="email">E-Mail-Adresse*</label>
+            <input type="email" id="email" name="E-Mail" required />
+        </div>
+        
+        <div class="form-group">
+            <label for="telefon">Telefonnummer</label>
+            <input type="tel" id="telefon" name="Telefon" />
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+
+        <h3>Bestellübersicht (Vorschau)</h3>
+        <p class="small">Hier sehen Sie eine Zusammenfassung Ihrer Auswahl.</p>
+
+        <div class="summary">
+          Rindfleischpaket (10 kg) x 1
+          Geschätzter Gesamtpreis: ~219,00 €
+        </div>
+        
+        <div class="total">
+            Geschätzter Gesamtpreis: ~219,00 €
+        </div>
+
+        <button type="submit" class="primary">
+            Vorbestellung jetzt abschicken
+        </button>
+        
+      </aside>
+
+    </form>
+
+    <footer>
+      <p>Ihre Daten werden vertraulich behandelt und nur zur Abwicklung der Vorbestellung genutzt.</p>
+    </footer>
+  </div>
+</body>
+</html>
