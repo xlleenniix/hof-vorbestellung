@@ -106,46 +106,38 @@ Diana Hausmann & Ole Kunzelmann">
   </div>
 
   <script>
+// Neues, fehlerfreies Mengenscript
 function previewOrder(){
-  const q1 = document.getElementById('q1');
-  const name = document.getElementById('name').value || '-';
-  const phone = document.getElementById('phone').value || '-';
-  const email = document.getElementById('email').value || '-';
-
-  const txt = `Rindfleischpakete: ${q1.value} Paket(e)
+  try{
+    const q1 = document.getElementById('q1');
+    const name = document.getElementById('name').value || '-';
+    const phone = document.getElementById('phone').value || '-';
+    const email = document.getElementById('email').value || '-';
+    const txt = `Rindfleischpakete: ${q1.value} Paket(e)
 Name: ${name}
 Telefon: ${phone}
 E-Mail: ${email}`;
-
-  document.getElementById('orderPreview').innerHTML =
-    `<div class="summary">${txt.replace(/
-/g,'<br>')}</div>`;
+    const preview = document.getElementById('orderPreview');
+    if(preview) preview.innerHTML = `<div class="summary">${txt.replace(/\n/g,'<br>')}</div>`;
+  }catch(e){console.error('previewOrder error', e); alert('Vorschau konnte nicht erstellt werden.');}
 }
 
 function resetForm(){
-  document.getElementById('q1').value = 1;
-  document.getElementById('total').textContent = '1';
-  document.getElementById('orderPreview').innerHTML = '';
+  try{
+    const q1 = document.getElementById('q1');
+    if(q1) q1.value = 1;
+    const preview = document.getElementById('orderPreview');
+    if(preview) preview.innerHTML = '';
+    const total = document.getElementById('total');
+    if(total) total.textContent = '1';
+  }catch(e){console.error('resetForm error', e); alert('Zurücksetzen fehlgeschlagen.');}
 }
 
 document.addEventListener('DOMContentLoaded', function(){
-
   const q1 = document.getElementById('q1');
   const total = document.getElementById('total');
 
-  q1.addEventListener('input', function(){
-    total.textContent = q1.value || 0;
-  });
-
-  q1.addEventListener('blur', function(){
-    let qty = parseInt(q1.value);
-    if(!qty || qty < 1) qty = 1;
-    q1.value = qty;
-    total.textContent = qty;
-  });
-
-});
-</script>
+  q
   <script>
     // Erfolgsmeldung anzeigen, wenn ?success=1 in der URL steht
     const urlParams = new URLSearchParams(window.location.search);
