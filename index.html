@@ -58,6 +58,7 @@
         
         <input type="hidden" name="_next" value="https://ihre-website.de/danke.html">
         <input type="hidden" name="_subject" value="Neue Hofladen-Vorbestellung">
+        <input type="hidden" name="_autoresponse" value="Vielen Dank für deine Vorbestellung! Wir haben deine Bestellung erhalten und melden uns, sobald die Abholung des Fleisches bereitsteht.">
 
       </section>
 
@@ -86,13 +87,10 @@
         <p class="small">Hier sehen Sie eine Zusammenfassung Ihrer Auswahl.</p>
 
         <div class="summary">
-          Rindfleischpaket (10 kg) x 1
-          Preisermittlung nach Endgewicht bei Abholung.
-        </div>
+          </div>
         
         <div class="total">
-            Geschätzter Gesamtpreis: Wird bei Abholung ermittelt
-        </div>
+            </div>
 
         <button type="submit" class="primary">
             Vorbestellung jetzt abschicken
@@ -106,5 +104,47 @@
       <p>Ihre Daten werden vertraulich behandelt und nur zur Abwicklung der Vorbestellung genutzt.</p>
     </footer>
   </div>
+
+  <script>
+    /**
+     * Aktualisiert die Bestellübersicht basierend auf der Menge im Input-Feld.
+     * Wird beim Verlassen des Feldes (oder Ändern des Wertes) ausgeführt.
+     */
+    function updateSummary() {
+        const quantityInput = document.getElementById('q1');
+        const summaryDiv = document.querySelector('.summary');
+        const totalDiv = document.querySelector('.total');
+        
+        // Wert auslesen und in eine Ganzzahl umwandeln (Standard ist 0, wenn ungültig)
+        const quantity = parseInt(quantityInput.value) || 0;
+        
+        // Sicherstellen, dass die Menge nicht negativ ist
+        if (quantity < 0) {
+            quantityInput.value = 0;
+            return;
+        }
+
+        if (quantity === 0) {
+            summaryDiv.textContent = 'Bitte wählen Sie mindestens ein Paket aus.';
+            totalDiv.textContent = 'Geschätzter Gesamtpreis: Wird bei Abholung ermittelt';
+        } else {
+            // Zeigt die gewählte Menge an
+            summaryDiv.textContent = `Rindfleischpaket (ca. 10 kg) x ${quantity}\nPreisermittlung nach Endgewicht bei Abholung.`;
+            totalDiv.textContent = 'Geschätzter Gesamtpreis: Wird bei Abholung ermittelt';
+        }
+    }
+
+    // Event Listener hinzufügen, wenn das Dokument geladen ist
+    document.addEventListener('DOMContentLoaded', () => {
+        const quantityInput = document.getElementById('q1');
+        if (quantityInput) {
+            // Führt die Funktion aus, sobald der Wert im Feld geändert wurde (inkl. Verlassen des Feldes)
+            quantityInput.addEventListener('change', updateSummary);
+            
+            // Führt die Funktion einmal beim Laden aus, um den initialen Wert (1) zu setzen
+            updateSummary();
+        }
+    });
+  </script>
 </body>
 </html>
