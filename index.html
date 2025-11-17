@@ -29,4 +29,109 @@
   <div class="container">
     <header>
       <h1>Vorbestellung — Fleisch ab Hof</h1>
-      <div cla
+      <div class="small">Direkt vom Hof: nachhaltig, regional & frisch</div>
+    </header>
+
+    <form class="grid" action="https://formsubmit.co/hausmann.landwirtschaft@gmx.de" method="POST">
+
+      <section class="card products">
+        <h2>Produkte & Menge</h2>
+        <p class="small">Bitte Anzahl der gewünschten Fleischpakete auswählen.</p>
+
+        <ul>
+          <li class="prod">
+            <div class="left">
+              <label for="q1"><strong>Rindfleischpaket (ca. 10 kg)</strong></label>
+              <div class="small">Anzahl der Pakete</div>
+            </div>
+            <div>
+              <input type="number" id="q1" name="Pakete" min="1" value="1" step="1" required>
+            </div>
+          </li>
+        </ul>
+
+        <div class="total">Anzahl Pakete: <span id="total">1</span></div>
+
+        <button class="primary" type="button" onclick="previewOrder();">Bestellung anzeigen</button>
+      </section>
+
+      <aside class="card">
+        <h2>Kontakt</h2>
+
+        <label class="small">Name</label>
+        <input type="text" id="name" name="Name" placeholder="Max Mustermann" required>
+
+        <label class="small" style="margin-top:8px">Telefon</label>
+        <input type="tel" id="phone" name="Telefon" placeholder="0151 12345678">
+
+        <label class="small" style="margin-top:8px">E-Mail</label>
+        <input type="email" id="email" name="E-Mail" placeholder="max@beispiel.de" required>
+
+        <input type="hidden" name="_subject" value="Neue Vorbestellung – Fleisch ab Hof">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_next" value="https://xlleenniix.github.io/hof-vorbestellung/?success=1">
+
+        <button class="primary" type="submit">Vorbestellung senden</button>
+
+        <div id="orderPreview" style="margin-top:10px"></div>
+      </aside>
+
+    </form>
+
+    <footer>
+      <div class="small">Kontakt: Diana Hausmann – 0176 60859204 · Ole Kunzelmann – 0157 52870175.</div>
+    </footer>
+  </div>
+
+<script>
+function previewOrder(){
+  const q1 = document.getElementById('q1').value;
+  const name = document.getElementById('name').value || '-';
+  const phone = document.getElementById('phone').value || '-';
+  const email = document.getElementById('email').value || '-';
+
+  const txt = `Rindfleischpakete: ${q1} Paket(e)
+Name: ${name}
+Telefon: ${phone}
+E-Mail: ${email}`;
+  document.getElementById('orderPreview').innerHTML = `<div class="summary">${txt.replace(/
+/g,'<br>')}</div>`;
+}
+
+// Anzahl aktualisieren
+const q1 = document.getElementById('q1');
+const total = document.getElementById('total');
+
+q1.addEventListener('input', function(){
+  let value = q1.value;
+
+  if(value === ""){
+    total.textContent = "0";
+    return;
+  }
+
+  let qty = Number(value);
+
+  if(isNaN(qty) || qty < 1){ qty = 1; }
+
+  q1.value = qty;
+  total.textContent = qty;
+});
+</script>
+
+<script>
+const urlParams = new URLSearchParams(window.location.search);
+if(urlParams.get('success') === '1'){
+  const box = document.createElement('div');
+  box.style.background = '#e6ffe6';
+  box.style.border = '1px solid #8bc34a';
+  box.style.padding = '14px';
+  box.style.borderRadius = '10px';
+  box.style.marginBottom = '18px';
+  box.innerHTML = '<strong>Vielen Dank!</strong><br>Ihre Bestellung wurde erfolgreich gesendet.';
+  document.querySelector('.container').prepend(box);
+}
+</script>
+
+</body>
+</html>
