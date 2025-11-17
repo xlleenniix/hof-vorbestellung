@@ -122,12 +122,14 @@ document.addEventListener("DOMContentLoaded", function() {
       lines.push('Telefon: ' + (document.getElementById('phone').value || '-'));
       lines.push('E-Mail: ' + (document.getElementById('email').value || '-'));
       lines.push('Zahlung: Bar bei Abholung');
-      return lines.join("\n");
+      return lines.join("
+");
     }
 
     document.getElementById('btnPreview').addEventListener('click', ()=>{
       const txt = buildOrderText();
-      document.getElementById('orderPreview').innerHTML = `<div class="summary">${txt.replace(/\n/g,'<br>')}</div>`;
+      document.getElementById('orderPreview').innerHTML = `<div class="summary">${txt.replace(/
+/g,'<br>')}</div>`;
     });
 
     // Replace mailto with FormSubmit form submission
@@ -146,7 +148,13 @@ document.addEventListener("DOMContentLoaded", function() {
         "E-Mail": document.getElementById('email').value,
         "Pakete": q1.value,
         "_subject": "Ihre Vorbestellung – Fleisch ab Hof",
-        "_autoresponse": "Vielen Dank für Ihre Vorbestellung!\n\nWir haben Ihre Daten erhalten und melden uns, sobald die Pakete zur Abholung bereitstehen.\nDer endgültige Preis ergibt sich beim Abholen nach tatsächlichem Gewicht.\n\nHerzliche Grüße\nDiana Hausmann & Ole Kunzelmann",
+        "_autoresponse": "Vielen Dank für Ihre Vorbestellung!
+
+Wir haben Ihre Daten erhalten und melden uns, sobald die Pakete zur Abholung bereitstehen.
+Der endgültige Preis ergibt sich beim Abholen nach tatsächlichem Gewicht.
+
+Herzliche Grüße
+Diana Hausmann & Ole Kunzelmann",
         "_template": "table"
       };
 
@@ -163,5 +171,19 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 </script>
+  <script>
+    // Erfolgsmeldung anzeigen, wenn ?success=1 in der URL steht
+    const urlParams = new URLSearchParams(window.location.search);
+    if(urlParams.get('success') === '1'){
+      const box = document.createElement('div');
+      box.style.background = '#e6ffe6';
+      box.style.border = '1px solid #8bc34a';
+      box.style.padding = '14px';
+      box.style.borderRadius = '10px';
+      box.style.marginBottom = '18px';
+      box.innerHTML = '<strong>Vielen Dank!</strong><br>Ihre Bestellung wurde erfolgreich gesendet.';
+      document.querySelector('.container').prepend(box);
+    }
+  </script>
 </body>
 </html>
