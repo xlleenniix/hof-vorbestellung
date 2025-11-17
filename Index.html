@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vorbestellung — Fleisch ab Hof</title>
+  <style>
+    :root{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;--accent:#6b8e23}
+    body{margin:0;padding:0;background:#f7f7f7;color:#222}
+    .container{max-width:980px;margin:28px auto;padding:20px;background:#fff;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,.06)}
+    header{display:flex;gap:16px;align-items:center}
+    header h1{margin:0;font-size:1.4rem}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:20px;margin-top:18px}
+    @media (max-width:880px){.grid{grid-template-columns:1fr}}
+    .card{padding:14px;border-radius:10px;background:#fcfcfc;border:1px solid #eee}
+    .products ul{list-style:none;padding:0;margin:0}
+    .prod{display:flex;align-items:center;justify-content:space-between;padding:10px 6px;border-bottom:1px dashed #eee}
+    .prod:last-child{border-bottom:0}
+    .prod .left{display:flex;gap:12px;align-items:center}
+    .prod label{font-weight:600}
+    input[type=number]{width:72px;padding:6px;border-radius:6px;border:1px solid #ddd}
+    input[type=date],input[type=text],input[type=email],input[type=tel],select{width:100%;padding:8px;border-radius:8px;border:1px solid #ddd}
+    .small{font-size:.9rem;color:#555}
+    .total{font-size:1.2rem;font-weight:700;margin-top:12px}
+    button.primary{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;border:0;cursor:pointer}
+    button.ghost{background:transparent;border:1px solid #ccc;padding:8px;border-radius:8px;cursor:pointer}
+    .summary{font-family:monospace;background:#f3f3f3;padding:10px;border-radius:8px;white-space:pre-wrap;margin-top:10px}
+    footer{margin-top:18px;font-size:.9rem;color:#666}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Vorbestellung — Fleisch ab Hof</h1>
+      <div class="small">Direkt vom Hof: nachhaltig, regional & frisch</div>
+    </header>
+
+    <div class="grid">
+      <section class="card products">
+        <h2>Produkte & Menge</h2>
+        <p class="small">Wähle Produkte und gib gewünschte Menge an. Preise sind Richtwerte — Endpreis nach Abholung/Abrechnung.</p>
+
+        <ul id="productList">
+          <ul id="productList">
+          <li class="prod">
+            <div class="left">
+              <input type="checkbox" id="p1" data-name="Rindfleischpaket (ca. 10 kg)" data-unit="kg" data-price="15">
+              <label for="p1">Rindfleischpaket aus eigener Aufzucht</label>
+              <div class="small">(ca. 10 kg, 15 € pro kg)</div>
+            </div>
+            <div>
+              <input type="number" id="q1" min="0" value="0" step="0.5" disabled>
+            </div>
+          </li>
+        </ul>
+
+        <div class="total">Gesamt: <span id="total">0,00</span> €</div>
+
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <button class="primary" id="btnPreview">Bestellung anzeigen</button>
+          <button class="ghost" id="btnReset">Zurücksetzen</button>
+        </div>
+
+      </section>
+
+      <aside class="card">
+        <h2>Abholdaten & Kontakt</h2>
+        <label class="small">Gewünschtes Abholdatum</label>
+        <input type="date" id="pickupDate">
+
+        <label class="small" style="margin-top:8px">Name</label>
+        <input type="text" id="name" placeholder="Max Mustermann">
+
+        <label class="small" style="margin-top:8px">Telefon</label>
+        <input type="tel" id="phone" placeholder="0151 12345678">
+
+        <label class="small" style="margin-top:8px">E‑Mail</label>
+        <input type="email" id="email" placeholder="max@beispiel.de">
+
+        <label class="small" style="margin-top:8px">Zahlart</label>
+        <select id="payment">
+          <option value="bar">Bar bei Abholung</option>
+          <option value="vorab">Vorkasse (Überweisung)</option>
+        </select>
+
+        <div style="margin-top:12px">
+          <button class="primary" id="btnSend">Vorbestellung senden</button>
+        </div>
+
+        <div id="orderPreview" style="margin-top:10px"></div>
+
+        <div style="margin-top:12px" class="small">
+          <strong>Hinweis:</strong> Diese Seite ist ein Bestellformular ohne Zahlungsabwicklung. Die Bestellung wird per E‑Mail an den Hof gesendet; die Buchung ist verbindlich, wenn Hof-Kontakt bestätigt.
+        </div>
+
+      </aside>
+    </div>
+
+    <footer>
+      <div class="small">Kontakt: Diana Hausmann – 0176 60859204 · Ole Kunzelmann – 0157 52870175. Preise freibleibend.</div>
+    </footer>
+  </div>
+
+  <script>
+    const products = [
+      {chk: 'p1', qty: 'q1'},
+      {chk: 'p2', qty: 'q2'},
+      {chk: 'p3', qty: 'q3'},
+      {chk: 'p4', qty: 'q4'}
+    ];
+
+    function formatMoney(x){
+      return Number(x).toLocaleString('de-DE', {minimumFractionDigits:2, maximumFractionDigits:2});
+    }
+
+    function updateTotal(){
+      let total = 0;
+      products.forEach(p=>{
+        const chk = document.getElementById(p.chk);
+        const q = document.getElementById(p.qty);
+        if(chk.checked){
+          const price = parseFloat(chk.dataset.price) || 0;
+          const qty = parseFloat(q.value) || 0;
+          total += price * qty;
+        }
+      });
+      document.getElementById('total').textContent = formatMoney(total);
+    }
+
+    // enable/disable quantity inputs when checkbox toggles
+    products.forEach(p=>{
+      const chk = document.getElementById(p.chk);
+      const q = document.getElementById(p.qty);
+      chk.addEventListener('change', ()=>{
+        q.disabled = !chk.checked;
+        if(!chk.checked) q.value = 0;
+        updateTotal();
+      });
+      q.addEventListener('input', ()=> updateTotal());
+    });
+
+    document.getElementById('btnReset').addEventListener('click', ()=>{
+      products.forEach(p=>{document.getElementById(p.chk).checked=false; document.getElementById(p.qty).value=0; document.getElementById(p.qty).disabled=true;});
+      document.getElementById('total').textContent = formatMoney(0);
+      document.getElementById('orderPreview').innerHTML='';
+    });
+
+    function buildOrderText(){
+      const lines = [];
+      lines.push('Vorbestellung Fleisch ab Hof');
+      lines.push('---------------------------');
+      products.forEach(p=>{
+        const chk = document.getElementById(p.chk);
+        const q = document.getElementById(p.qty);
+        if(chk.checked && (parseFloat(q.value) || 0) > 0){
+          lines.push(`${chk.dataset.name} — ${q.value} ${chk.dataset.unit}  — ${chk.dataset.price} €/${chk.dataset.unit}`);
+        }
+      });
+      lines.push('');
+      lines.push('Gewünschtes Abholdatum: ' + (document.getElementById('pickupDate').value || '-'));
+      lines.push('Name: ' + (document.getElementById('name').value || '-'));
+      lines.push('Telefon: ' + (document.getElementById('phone').value || '-'));
+      lines.push('E‑Mail: ' + (document.getElementById('email').value || '-'));
+      lines.push('Zahlart: ' + document.getElementById('payment').value);
+      lines.push('');
+      lines.push('Gesamt (geschätzt): ' + document.getElementById('total').textContent + ' €');
+      return lines.join('\n');
+    }
+
+    document.getElementById('btnPreview').addEventListener('click', ()=>{
+      const txt = buildOrderText();
+      document.getElementById('orderPreview').innerHTML = `<div class="summary">${txt.replace(/\n/g,'<br>')}</div>`;
+      window.scrollTo({top: document.getElementById('orderPreview').offsetTop-20, behavior:'smooth'});
+    });
+
+    function validate(){
+      // at least one product
+      let ok=false;
+      products.forEach(p=>{const chk=document.getElementById(p.chk); const q=document.getElementById(p.qty); if(chk.checked && (parseFloat(q.value)||0)>0) ok=true;});
+      if(!ok){alert('Bitte mindestens ein Produkt mit Menge auswählen.'); return false}
+      if(!document.getElementById('name').value){alert('Bitte Name angeben.'); return false}
+      if(!document.getElementById('phone').value && !document.getElementById('email').value){alert('Bitte mindestens Telefon oder E‑Mail angeben.'); return false}
+      if(!document.getElementById('pickupDate').value){if(!confirm('Kein Abholdatum gewählt. Fortfahren?')) return false}
+      return true;
+    }
+
+    document.getElementById('btnSend').addEventListener('click', ()=>{
+      if(!validate()) return;
+      const to = 'hausmann.landwirtschaft@gmx.de'; // <-- E‑Mail-Adresse des Hofes anpassen
+      const subject = encodeURIComponent('Vorbestellung Fleisch ab Hof - ' + (document.getElementById('name').value || ''));
+      const body = encodeURIComponent(buildOrderText());
+      // Versuche E‑Mail-Client zu öffnen (mailto). Falls blockiert, zeige Text zum Kopieren.
+      const mailto = `mailto:${to}?subject=${subject}&body=${body}`;
+      // Öffnen
+      window.location.href = mailto;
+      // außerdem zeigen wir die Vorschau
+      document.getElementById('orderPreview').innerHTML = `<div class="summary">${buildOrderText().replace(/\n/g,'<br>')}</div><div class="small" style="margin-top:8px">Falls Ihr E‑Mail-Programm nicht öffnet: Text kopieren und manuell an <strong>${to}</strong> senden.</div>`;
+    });
+
+  </script>
+</body>
+</html>
