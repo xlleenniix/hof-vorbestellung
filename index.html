@@ -102,11 +102,9 @@
   </div>
 
   <script>
+document.addEventListener("DOMContentLoaded", function() {
     const products = [
-      {chk: 'p1', qty: 'q1'},
-      {chk: 'p2', qty: 'q2'},
-      {chk: 'p3', qty: 'q3'},
-      {chk: 'p4', qty: 'q4'}
+      {chk: 'p1', qty: 'q1'}
     ];
 
     function formatMoney(x){
@@ -120,83 +118,6 @@
         const q = document.getElementById(p.qty);
         if(chk.checked){
           const price = parseFloat(chk.dataset.price) || 0;
-          const qty = parseFloat(q.value) || 0;
-          total += price * qty;
-        }
-      });
-      document.getElementById('total').textContent = formatMoney(total);
-    }
-
-    // enable/disable quantity inputs when checkbox toggles
-    products.forEach(p=>{
-      const chk = document.getElementById(p.chk);
-      const q = document.getElementById(p.qty);
-      chk.addEventListener('change', ()=>{
-        q.disabled = !chk.checked;
-        if(!chk.checked) q.value = 0;
-        updateTotal();
-      });
-      q.addEventListener('input', ()=> updateTotal());
-    });
-
-    document.getElementById('btnReset').addEventListener('click', ()=>{
-      products.forEach(p=>{document.getElementById(p.chk).checked=false; document.getElementById(p.qty).value=0; document.getElementById(p.qty).disabled=true;});
-      document.getElementById('total').textContent = formatMoney(0);
-      document.getElementById('orderPreview').innerHTML='';
-    });
-
-    function buildOrderText(){
-      const lines = [];
-      lines.push('Vorbestellung Fleisch ab Hof');
-      lines.push('---------------------------');
-      products.forEach(p=>{
-        const chk = document.getElementById(p.chk);
-        const q = document.getElementById(p.qty);
-        if(chk.checked && (parseFloat(q.value) || 0) > 0){
-          lines.push(`${chk.dataset.name} — ${q.value} ${chk.dataset.unit}  — ${chk.dataset.price} €/${chk.dataset.unit}`);
-        }
-      });
-      lines.push('');
-      lines.push('Gewünschtes Abholdatum: ' + (document.getElementById('pickupDate').value || '-'));
-      lines.push('Name: ' + (document.getElementById('name').value || '-'));
-      lines.push('Telefon: ' + (document.getElementById('phone').value || '-'));
-      lines.push('E‑Mail: ' + (document.getElementById('email').value || '-'));
-      lines.push('Zahlart: ' + document.getElementById('payment').value);
-      lines.push('');
-      lines.push('Gesamt (geschätzt): ' + document.getElementById('total').textContent + ' €');
-      return lines.join('\n');
-    }
-
-    document.getElementById('btnPreview').addEventListener('click', ()=>{
-      const txt = buildOrderText();
-      document.getElementById('orderPreview').innerHTML = `<div class="summary">${txt.replace(/\n/g,'<br>')}</div>`;
-      window.scrollTo({top: document.getElementById('orderPreview').offsetTop-20, behavior:'smooth'});
-    });
-
-    function validate(){
-      // at least one product
-      let ok=false;
-      products.forEach(p=>{const chk=document.getElementById(p.chk); const q=document.getElementById(p.qty); if(chk.checked && (parseFloat(q.value)||0)>0) ok=true;});
-      if(!ok){alert('Bitte mindestens ein Produkt mit Menge auswählen.'); return false}
-      if(!document.getElementById('name').value){alert('Bitte Name angeben.'); return false}
-      if(!document.getElementById('phone').value && !document.getElementById('email').value){alert('Bitte mindestens Telefon oder E‑Mail angeben.'); return false}
-      if(!document.getElementById('pickupDate').value){if(!confirm('Kein Abholdatum gewählt. Fortfahren?')) return false}
-      return true;
-    }
-
-    document.getElementById('btnSend').addEventListener('click', ()=>{
-      if(!validate()) return;
-      const to = 'hausmann.landwirtschaft@gmx.de'; // <-- E‑Mail-Adresse des Hofes anpassen
-      const subject = encodeURIComponent('Vorbestellung Fleisch ab Hof - ' + (document.getElementById('name').value || ''));
-      const body = encodeURIComponent(buildOrderText());
-      // Versuche E‑Mail-Client zu öffnen (mailto). Falls blockiert, zeige Text zum Kopieren.
-      const mailto = `mailto:${to}?subject=${subject}&body=${body}`;
-      // Öffnen
-      window.location.href = mailto;
-      // außerdem zeigen wir die Vorschau
-      document.getElementById('orderPreview').innerHTML = `<div class="summary">${buildOrderText().replace(/\n/g,'<br>')}</div><div class="small" style="margin-top:8px">Falls Ihr E‑Mail-Programm nicht öffnet: Text kopieren und manuell an <strong>${to}</strong> senden.</div>`;
-    });
-
-  </script>
+          const qty = parseFloat(q.valu
 </body>
 </html>
