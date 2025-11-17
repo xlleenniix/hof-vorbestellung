@@ -106,46 +106,44 @@ Diana Hausmann & Ole Kunzelmann">
   </div>
 
   <script>
-// Safer handlers: expose functions globally (inline onclick funktioniert auch wenn DOMContentLoaded failed)
 function previewOrder(){
-  try{
-    const q1 = document.getElementById('q1');
-    const name = document.getElementById('name').value || '-';
-    const phone = document.getElementById('phone').value || '-';
-    const email = document.getElementById('email').value || '-';
-    const txt = `Rindfleischpakete: ${q1.value} Paket(e)
+  const q1 = document.getElementById('q1');
+  const name = document.getElementById('name').value || '-';
+  const phone = document.getElementById('phone').value || '-';
+  const email = document.getElementById('email').value || '-';
+
+  const txt = `Rindfleischpakete: ${q1.value} Paket(e)
 Name: ${name}
 Telefon: ${phone}
 E-Mail: ${email}`;
-    const preview = document.getElementById('orderPreview');
-    if(preview) preview.innerHTML = `<div class="summary">${txt.replace(/\n/g,'<br>')}</div>`;
-  }catch(e){console.error('previewOrder error', e); alert('Vorschau konnte nicht erstellt werden. Öffne die Entwicklerkonsole für Details.');}
+
+  document.getElementById('orderPreview').innerHTML =
+    `<div class="summary">${txt.replace(/
+/g,'<br>')}</div>`;
 }
 
 function resetForm(){
-  try{
-    const q1 = document.getElementById('q1');
-    if(q1) q1.value = 1;
-    const preview = document.getElementById('orderPreview');
-    if(preview) preview.innerHTML = '';
-    const total = document.getElementById('total');
-    if(total) total.textContent = '1';
-  }catch(e){console.error('resetForm error', e); alert('Zurücksetzen fehlgeschlagen.');}
+  document.getElementById('q1').value = 1;
+  document.getElementById('total').textContent = '1';
+  document.getElementById('orderPreview').innerHTML = '';
 }
 
-// DOMContentLoaded: ensure live behaviour
 document.addEventListener('DOMContentLoaded', function(){
-  try{
-    const q1 = document.getElementById('q1');
-    if(q1){
-      q1.addEventListener('input', function(){
-        let qty = parseInt(q1.value) || 1;
-        if(qty < 1) qty = 1;
-        q1.value = qty;
-        const total = document.getElementById('total'); if(total) total.textContent = qty;
-      });
-    }
-  }catch(e){console.error('DOMContentLoaded handler error', e);}
+
+  const q1 = document.getElementById('q1');
+  const total = document.getElementById('total');
+
+  q1.addEventListener('input', function(){
+    total.textContent = q1.value || 0;
+  });
+
+  q1.addEventListener('blur', function(){
+    let qty = parseInt(q1.value);
+    if(!qty || qty < 1) qty = 1;
+    q1.value = qty;
+    total.textContent = qty;
+  });
+
 });
 </script>
   <script>
