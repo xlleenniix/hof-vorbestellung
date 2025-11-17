@@ -16,14 +16,14 @@
     .products ul{list-style:none;padding:0;margin:0}
     .prod{display:flex;align-items:center;justify-content:space-between;padding:10px 6px;border-bottom:1px dashed #eee}
     .prod:last-child{border-bottom:0}
-    input[type=number]{width:72px;padding:6px;border-radius:6px;border:1px solid #ddd;text-align:center} /* text-align:center hinzugefügt */
+    input[type=number]{width:72px;padding:6px;border-radius:6px;border:1px solid #ddd;text-align:center}
     input[type=text],input[type=email],input[type=tel]{width:100%;padding:8px;border-radius:8px;border:1px solid #ddd}
     .small{font-size:.9rem;color:#555}
     .total{font-size:1.2rem;font-weight:700;margin-top:12px}
-    button.primary{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;border:0;cursor:pointer;width:100%;font-size:1.1rem;margin-top:15px} /* Anpassung für volle Breite */
+    button.primary{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;border:0;cursor:pointer;width:100%;font-size:1.1rem;margin-top:15px}
     .summary{font-family:monospace;background:#f3f3f3;padding:10px;border-radius:8px;white-space:pre-wrap;margin-top:10px}
     footer{margin-top:18px;font-size:.9rem;color:#666;text-align:center}
-    .form-group{margin-bottom:12px} /* Hinzugefügt */
+    .form-group{margin-bottom:12px}
   </style>
 </head>
 <body>
@@ -37,13 +37,13 @@
 
       <section class="card products">
         <h2>Produkte & Menge 📦</h2>
-        <p class="small">Bitte Anzahl der gewünschten Fleischpakete auswählen. Die Abrechnung erfolgt nach dem tatsächlichen Gewicht.</p>
+        <p class="small">Bitte Anzahl der gewünschten Fleischpakete auswählen. Die Abrechnung erfolgt nach dem tatsächlichen Gewicht bei Abholung.</p>
 
         <ul>
           <li class="prod">
             <div class="left">
               <label for="q1"><strong>Rindfleischpaket (ca. 10 kg)</strong></label>
-              <div class="small">Preis: $21,90$ € / kg. Fertigstellung: Mitte Dezember.</div>
+              <div class="small">Der endgültige Preis wird nach dem tatsächlichen Endgewicht bei Abholung ermittelt.</div>
             </div>
             <div>
                 <input type="number" id="q1" name="Rindfleischpaket_Anzahl" value="1" min="0" />
@@ -87,11 +87,11 @@
 
         <div class="summary">
           Rindfleischpaket (10 kg) x 1
-          Geschätzter Gesamtpreis: ~219,00 €
+          Preisermittlung nach Endgewicht bei Abholung.
         </div>
         
         <div class="total">
-            Geschätzter Gesamtpreis: ~219,00 €
+            Geschätzter Gesamtpreis: Wird bei Abholung ermittelt
         </div>
 
         <button type="submit" class="primary">
