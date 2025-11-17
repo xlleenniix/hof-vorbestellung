@@ -58,7 +58,7 @@
 
         <div style="margin-top:12px;display:flex;gap:8px">
           <button class="primary" id="btnPreview" type="button" onclick="previewOrder();">Bestellung anzeigen</button>
-          <button class="ghost" id="btnReset" type="button" onclick="resetForm();">Zurücksetzen</button>
+          
         </div>
 
       </section>
@@ -118,7 +118,8 @@ Name: ${name}
 Telefon: ${phone}
 E-Mail: ${email}`;
     const preview = document.getElementById('orderPreview');
-    if(preview) preview.innerHTML = `<div class="summary">${txt.replace(/\n/g,'<br>')}</div>`;
+    if(preview) preview.innerHTML = `<div class="summary">${txt.replace(/
+/g,'<br>')}</div>`;
   }catch(e){console.error('previewOrder error', e); alert('Vorschau konnte nicht erstellt werden.');}
 }
 
@@ -137,7 +138,19 @@ document.addEventListener('DOMContentLoaded', function(){
   const q1 = document.getElementById('q1');
   const total = document.getElementById('total');
 
-  q
+  q1.addEventListener('input', function(){
+    let value = q1.value;
+    if(value === ""){
+      total.textContent = "0";
+      return;
+    }
+    let qty = Number(value);
+    if(isNaN(qty) || qty < 1){ qty = 1; }
+    q1.value = qty;
+    total.textContent = qty;
+  });
+});
+</script>
   <script>
     // Erfolgsmeldung anzeigen, wenn ?success=1 in der URL steht
     const urlParams = new URLSearchParams(window.location.search);
