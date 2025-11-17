@@ -57,8 +57,8 @@
         <div class="total">Anzahl Pakete: <span id="total">1</span></div>
 
         <div style="margin-top:12px;display:flex;gap:8px">
-          <button class="primary" id="btnPreview" type="button">Bestellung anzeigen</button>
-          <button class="ghost" id="btnReset" type="button">Zurücksetzen</button>
+          <button class="primary" id="btnPreview" type="button" onclick="previewOrder();">Bestellung anzeigen</button>
+          <button class="ghost" id="btnReset" type="button" onclick="resetForm();">Zurücksetzen</button>
         </div>
 
       </section>
@@ -76,7 +76,13 @@
         <input type="email" id="email" name="E-Mail" placeholder="max@beispiel.de" required>
 
         <input type="hidden" name="_subject" value="Neue Vorbestellung – Fleisch ab Hof">
-        <input type="hidden" name="_autoresponse" value="Vielen Dank für Ihre Vorbestellung!\n\nWir haben Ihre Daten erhalten und melden uns, sobald die Pakete zur Abholung bereitstehen.\nDer endgültige Preis ergibt sich beim Abholen nach tatsächlichem Gewicht.\n\nHerzliche Grüße\nDiana Hausmann & Ole Kunzelmann">
+        <input type="hidden" name="_autoresponse" value="Vielen Dank für Ihre Vorbestellung!
+
+Wir haben Ihre Daten erhalten und melden uns, sobald die Pakete zur Abholung bereitstehen.
+Der endgültige Preis ergibt sich beim Abholen nach tatsächlichem Gewicht.
+
+Herzliche Grüße
+Diana Hausmann & Ole Kunzelmann">
         <input type="hidden" name="_template" value="table">
         <input type="hidden" name="_next" value="https://xlleenniix.github.io/hof-vorbestellung/?success=1">
 
@@ -100,39 +106,47 @@
   </div>
 
   <script>
-document.addEventListener("DOMContentLoaded", function() {
+// Safer handlers: expose functions globally (inline onclick funktioniert auch wenn DOMContentLoaded failed)
+function previewOrder(){
+  try{
     const q1 = document.getElementById('q1');
+    const name = document.getElementById('name').value || '-';
+    const phone = document.getElementById('phone').value || '-';
+    const email = document.getElementById('email').value || '-';
+    const txt = `Rindfleischpakete: ${q1.value} Paket(e)
+Name: ${name}
+Telefon: ${phone}
+E-Mail: ${email}`;
+    const preview = document.getElementById('orderPreview');
+    if(preview) preview.innerHTML = `<div class="summary">${txt.replace(/
+/g,'<br>')}</div>`;
+  }catch(e){console.error('previewOrder error', e); alert('Vorschau konnte nicht erstellt werden. Öffne die Entwicklerkonsole für Details.');}
+}
 
-    function updateTotal(){
-      let qty = parseInt(q1.value) || 1;
-      if(qty < 1) qty = 1;
-      q1.value = qty;
-      document.getElementById('total').textContent = qty;
+function resetForm(){
+  try{
+    const q1 = document.getElementById('q1');
+    if(q1) q1.value = 1;
+    const preview = document.getElementById('orderPreview');
+    if(preview) preview.innerHTML = '';
+    const total = document.getElementById('total');
+    if(total) total.textContent = '1';
+  }catch(e){console.error('resetForm error', e); alert('Zurücksetzen fehlgeschlagen.');}
+}
+
+// DOMContentLoaded: ensure live behaviour
+document.addEventListener('DOMContentLoaded', function(){
+  try{
+    const q1 = document.getElementById('q1');
+    if(q1){
+      q1.addEventListener('input', function(){
+        let qty = parseInt(q1.value) || 1;
+        if(qty < 1) qty = 1;
+        q1.value = qty;
+        const total = document.getElementById('total'); if(total) total.textContent = qty;
+      });
     }
-    q1.addEventListener('input', updateTotal);
-
-    document.getElementById('btnReset').addEventListener('click', ()=>{
-      q1.value = 1;
-      updateTotal();
-      document.getElementById('orderPreview').innerHTML='';
-    });
-
-    document.getElementById('btnPreview').addEventListener('click', ()=>{
-      const txt = `Rindfleischpakete: ${q1.value} Paket(e)\nName: ${document.getElementById('name').value || '-'}\nTelefon: ${document.getElementById('phone').value || '-'}\nE-Mail: ${document.getElementById('email').value || '-'}`;
-      document.getElementById('orderPreview').innerHTML = `<div class="summary">${txt.replace(/\n/g,'<br>')}</div>`;
-    });
-
-    const urlParams = new URLSearchParams(window.location.search);
-    if(urlParams.get('success') === '1'){
-      const box = document.createElement('div');
-      box.style.background = '#e6ffe6';
-      box.style.border = '1px solid #8bc34a';
-      box.style.padding = '14px';
-      box.style.borderRadius = '10px';
-      box.style.marginBottom = '18px';
-      box.innerHTML = '<strong>Vielen Dank!</strong><br>Ihre Bestellung wurde erfolgreich gesendet.';
-      document.querySelector('.container').prepend(box);
-    }
+  }catch(e){console.error('DOMContentLoaded handler error', e);}
 });
 </script>
   <script>
