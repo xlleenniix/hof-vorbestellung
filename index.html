@@ -63,8 +63,7 @@
 
       <aside class="card">
         <h2>Abholdaten & Kontakt</h2>
-        <label class="small">Gewünschtes Abholdatum</label>
-        <input type="date" id="pickupDate">
+        
 
         <label class="small" style="margin-top:8px">Name</label>
         <input type="text" id="name" placeholder="Max Mustermann">
@@ -100,7 +99,9 @@ document.addEventListener("DOMContentLoaded", function() {
     const q1 = document.getElementById('q1');
 
     function updateTotal(){
-      const qty = parseInt(q1.value) || 1;
+      let qty = parseInt(q1.value) || 1;
+      if(qty < 1) qty = 1;
+      q1.value = qty;
       document.getElementById('total').textContent = qty;
     }
 
@@ -118,8 +119,7 @@ document.addEventListener("DOMContentLoaded", function() {
       lines.push('---------------------------');
       lines.push('Rindfleischpakete: ' + (q1.value || '1') + ' Paket(e)');
       lines.push('');
-      lines.push('Gewünschtes Abholdatum: ' + (document.getElementById('pickupDate').value || '-'));
-      lines.push('Name: ' + (document.getElementById('name').value || '-'));
+      lines.push('      lines.push('Name: ' + (document.getElementById('name').value || '-'));
       lines.push('Telefon: ' + (document.getElementById('phone').value || '-'));
       lines.push('E-Mail: ' + (document.getElementById('email').value || '-'));
       lines.push('Zahlung: Bar bei Abholung');
