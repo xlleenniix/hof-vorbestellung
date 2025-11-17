@@ -19,7 +19,7 @@
     .prod .left{display:flex;gap:12px;align-items:center}
     .prod label{font-weight:600}
     input[type=number]{width:72px;padding:6px;border-radius:6px;border:1px solid #ddd}
-    input[type=date],input[type=text],input[type=email],input[type=tel],select{width:100%;padding:8px;border-radius:8px;border:1px solid #ddd}
+    input[type=date],input[type=text],input[type=email],input[type=tel]{width:100%;padding:8px;border-radius:8px;border:1px solid #ddd}
     .small{font-size:.9rem;color:#555}
     .total{font-size:1.2rem;font-weight:700;margin-top:12px}
     button.primary{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;border:0;cursor:pointer}
@@ -38,22 +38,21 @@
     <div class="grid">
       <section class="card products">
         <h2>Produkte & Menge</h2>
-        <p class="small">Wähle Produkte und gib gewünschte Menge an. Preise sind Richtwerte — Endpreis nach Abholung/Abrechnung.</p>
+        <p class="small">Bitte Anzahl der gewünschten Fleischpakete auswählen.</p>
 
         <ul id="productList">
           <li class="prod">
             <div class="left">
-              <input type="checkbox" id="p1" data-name="Rindfleischpaket" data-unit="Paket" data-price="1">
-              <label for="p1">Rindfleischpaket (ca. 10 kg)</label>
-              <div class="small">Menge = Anzahl der Pakete</div>
+              <label for="q1"><strong>Rindfleischpaket (ca. 10 kg)</strong></label>
+              <div class="small">Anzahl der Pakete</div>
             </div>
             <div>
-              <input type="number" id="q1" min="1" value="1" step="1" disabled>
+              <input type="number" id="q1" min="1" value="1" step="1">
             </div>
           </li>
         </ul>
 
-        <div class="total">Gesamt: <span id="total">0,00</span> €</div>
+        <div class="total">Anzahl Pakete: <span id="total">1</span></div>
 
         <div style="margin-top:12px;display:flex;gap:8px">
           <button class="primary" id="btnPreview">Bestellung anzeigen</button>
@@ -76,11 +75,7 @@
         <label class="small" style="margin-top:8px">E-Mail</label>
         <input type="email" id="email" placeholder="max@beispiel.de">
 
-        <label class="small" style="margin-top:8px">Zahlart</label>
-        <select id="payment">
-          <option value="bar">Bar bei Abholung</option>
-          
-        </select>
+        <div style="margin-top:12px" class="small"><strong>Zahlung:</strong> Nur Barzahlung bei Abholung</div>
 
         <div style="margin-top:12px">
           <button class="primary" id="btnSend">Vorbestellung senden</button>
@@ -89,55 +84,31 @@
         <div id="orderPreview" style="margin-top:10px"></div>
 
         <div style="margin-top:12px" class="small">
-          <strong>Hinweis:</strong> Diese Seite ist ein Bestellformular ohne Zahlungsabwicklung. Die Bestellung wird per E-Mail an den Hof gesendet; die Buchung ist verbindlich, wenn Hof-Kontakt bestätigt.
+          <strong>Hinweis:</strong> Endpreis wird bei Abholung nach tatsächlichem Gewicht berechnet.
         </div>
 
       </aside>
     </div>
 
     <footer>
-      <div class="small">Kontakt: Diana Hausmann – 0176 60859204 · Ole Kunzelmann – 0157 52870175. Preise freibleibend.</div>
+      <div class="small">Kontakt: Diana Hausmann – 0176 60859204 · Ole Kunzelmann – 0157 52870175.</div>
     </footer>
   </div>
 
   <script>
 document.addEventListener("DOMContentLoaded", function() {
-    const products = [
-      {chk: 'p1', qty: 'q1'}
-    ];
-
-    function formatMoney(x){
-      return Number(x).toLocaleString('de-DE', {minimumFractionDigits:2, maximumFractionDigits:2});
-    }
+    const q1 = document.getElementById('q1');
 
     function updateTotal(){
-      let total = 0;
-      products.forEach(p=>{
-        const chk = document.getElementById(p.chk);
-        const q = document.getElementById(p.qty);
-        if(chk.checked){
-          const price = parseFloat(chk.dataset.price) || 0;
-          const qty = parseFloat(q.value) || 0;
-          total += price * qty;
-        }
-      });
-      document.getElementById('total').textContent = formatMoney(total);
+      const qty = parseInt(q1.value) || 1;
+      document.getElementById('total').textContent = qty;
     }
 
-    products.forEach(p=>{
-      const chk = document.getElementById(p.chk);
-      const q = document.getElementById(p.qty);
-      chk.addEventListener('change', ()=>{
-        q.disabled = !chk.checked;
-        if(!chk.checked) q.value = 0;
-        updateTotal();
-      });
-      q.addEventListener('input', ()=> updateTotal());
-    });
+    q1.addEventListener('input', updateTotal);
 
     document.getElementById('btnReset').addEventListener('click', ()=>{
-      products.forEach(p=>{document.getElementById(p.chk).checked=false; document.getElementById(p.qty).value=0; document.getElementById(p.qty).disabled=true;});
-      document.getElementById('total').textContent = formatMoney(0);
+      q1.value = 1;
+      updateTotal();
       document.getElementById('orderPreview').innerHTML='';
     });
 
@@ -145,18 +116,38 @@ document.addEventListener("DOMContentLoaded", function() {
       const lines = [];
       lines.push('Vorbestellung Fleisch ab Hof');
       lines.push('---------------------------');
-      products.forEach(p=>{
-        const chk = document.getElementById(p.chk);
-        const q = document.getElementById(p.qty);
-        if(chk.checked && (parseFloat(q.value) || 0) > 0){
-          lines.push(`${chk.dataset.name} — ${q.value} ${chk.dataset.unit} — ${chk.dataset.price} €/${chk.dataset.unit}`);
-        }
-      });
+      lines.push('Rindfleischpakete: ' + (q1.value || '1') + ' Paket(e)');
       lines.push('');
       lines.push('Gewünschtes Abholdatum: ' + (document.getElementById('pickupDate').value || '-'));
       lines.push('Name: ' + (document.getElementById('name').value || '-'));
       lines.push('Telefon: ' + (document.getElementById('phone').value || '-'));
       lines.push('E-Mail: ' + (document.getElementById('email').value || '-'));
-      lines.push('Zahlart: ' + document.getElementById('payment').value);
-      lines.push('');
-      lines.push('
+      lines.push('Zahlung: Bar bei Abholung');
+      return lines.join("
+");
+    }
+
+    document.getElementById('btnPreview').addEventListener('click', ()=>{
+      const txt = buildOrderText();
+      document.getElementById('orderPreview').innerHTML = `<div class="summary">${txt.replace(/
+/g,'<br>')}</div>`;
+    });
+
+    function validate(){
+      if(!document.getElementById('name').value){alert('Bitte Name angeben.'); return false}
+      if(!document.getElementById('phone').value && !document.getElementById('email').value){alert('Bitte mindestens Telefon oder E-Mail angeben.'); return false}
+      return true;
+    }
+
+    document.getElementById('btnSend').addEventListener('click', ()=>{
+      if(!validate()) return;
+      const to = 'hausmann.landwirtschaft@gmx.de';
+      const subject = encodeURIComponent('Vorbestellung Fleisch ab Hof - ' + (document.getElementById('name').value || ''));
+      const body = encodeURIComponent(buildOrderText());
+      const mailto = `mailto:${to}?subject=${subject}&body=${body}`;
+      window.location.href = mailto;
+    });
+});
+</script>
+</body>
+</html>
