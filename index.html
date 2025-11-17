@@ -16,14 +16,11 @@
     .products ul{list-style:none;padding:0;margin:0}
     .prod{display:flex;align-items:center;justify-content:space-between;padding:10px 6px;border-bottom:1px dashed #eee}
     .prod:last-child{border-bottom:0}
-    .prod .left{display:flex;gap:12px;align-items:center}
-    .prod label{font-weight:600}
     input[type=number]{width:72px;padding:6px;border-radius:6px;border:1px solid #ddd}
-    input[type=date],input[type=text],input[type=email],input[type=tel]{width:100%;padding:8px;border-radius:8px;border:1px solid #ddd}
+    input[type=text],input[type=email],input[type=tel]{width:100%;padding:8px;border-radius:8px;border:1px solid #ddd}
     .small{font-size:.9rem;color:#555}
     .total{font-size:1.2rem;font-weight:700;margin-top:12px}
     button.primary{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;border:0;cursor:pointer}
-    button.ghost{background:transparent;border:1px solid #ccc;padding:8px;border-radius:8px;cursor:pointer}
     .summary{font-family:monospace;background:#f3f3f3;padding:10px;border-radius:8px;white-space:pre-wrap;margin-top:10px}
     footer{margin-top:18px;font-size:.9rem;color:#666}
   </style>
@@ -32,138 +29,4 @@
   <div class="container">
     <header>
       <h1>Vorbestellung — Fleisch ab Hof</h1>
-      <div class="small">Direkt vom Hof: nachhaltig, regional & frisch</div>
-    </header>
-
-    <div class="grid">
-      <form class="grid" action="https://formsubmit.co/hausmann.landwirtschaft@gmx.de" method="POST">
-
-      <section class="card products">
-        <h2>Produkte & Menge</h2>
-        <p class="small">Bitte Anzahl der gewünschten Fleischpakete auswählen.</p>
-
-        <ul id="productList">
-          <li class="prod">
-            <div class="left">
-              <label for="q1"><strong>Rindfleischpaket (ca. 10 kg)</strong></label>
-              <div class="small">Anzahl der Pakete</div>
-            </div>
-            <div>
-              <input type="number" id="q1" name="Pakete" min="1" value="1" step="1" required>
-            </div>
-          </li>
-        </ul>
-
-        <div class="total">Anzahl Pakete: <span id="total">1</span></div>
-
-        <div style="margin-top:12px;display:flex;gap:8px">
-          <button class="primary" id="btnPreview" type="button" onclick="previewOrder();">Bestellung anzeigen</button>
-          
-        </div>
-
-      </section>
-
-      <aside class="card">
-        <h2>Kontakt</h2>
-
-        <label class="small" style="margin-top:8px">Name</label>
-        <input type="text" id="name" name="Name" placeholder="Max Mustermann" required>
-
-        <label class="small" style="margin-top:8px">Telefon</label>
-        <input type="tel" id="phone" name="Telefon" placeholder="0151 12345678">
-
-        <label class="small" style="margin-top:8px">E-Mail</label>
-        <input type="email" id="email" name="E-Mail" placeholder="max@beispiel.de" required>
-
-        <input type="hidden" name="_subject" value="Neue Vorbestellung – Fleisch ab Hof">
-        <input type="hidden" name="_autoresponse" value="Vielen Dank für Ihre Vorbestellung!
-
-Wir haben Ihre Daten erhalten und melden uns, sobald die Pakete zur Abholung bereitstehen.
-Der endgültige Preis ergibt sich beim Abholen nach tatsächlichem Gewicht.
-
-Herzliche Grüße
-Diana Hausmann & Ole Kunzelmann">
-        <input type="hidden" name="_template" value="table">
-        <input type="hidden" name="_next" value="https://xlleenniix.github.io/hof-vorbestellung/?success=1">
-
-        <div style="margin-top:12px">
-          <button class="primary" id="btnSend" type="submit">Vorbestellung senden</button>
-        </div>
-
-        <div id="orderPreview" style="margin-top:10px"></div>
-
-        <div style="margin-top:12px" class="small">
-          <strong>Hinweis:</strong> Endpreis wird bei Abholung nach tatsächlichem Gewicht berechnet.
-        </div>
-
-      </aside>
-    </form>
-    </div>
-
-    <footer>
-      <div class="small">Kontakt: Diana Hausmann – 0176 60859204 · Ole Kunzelmann – 0157 52870175.</div>
-    </footer>
-  </div>
-
-  <script>
-// Neues, fehlerfreies Mengenscript
-function previewOrder(){
-  try{
-    const q1 = document.getElementById('q1');
-    const name = document.getElementById('name').value || '-';
-    const phone = document.getElementById('phone').value || '-';
-    const email = document.getElementById('email').value || '-';
-    const txt = `Rindfleischpakete: ${q1.value} Paket(e)
-Name: ${name}
-Telefon: ${phone}
-E-Mail: ${email}`;
-    const preview = document.getElementById('orderPreview');
-    if(preview) preview.innerHTML = `<div class="summary">${txt.replace(/
-/g,'<br>')}</div>`;
-  }catch(e){console.error('previewOrder error', e); alert('Vorschau konnte nicht erstellt werden.');}
-}
-
-function resetForm(){
-  try{
-    const q1 = document.getElementById('q1');
-    if(q1) q1.value = 1;
-    const preview = document.getElementById('orderPreview');
-    if(preview) preview.innerHTML = '';
-    const total = document.getElementById('total');
-    if(total) total.textContent = '1';
-  }catch(e){console.error('resetForm error', e); alert('Zurücksetzen fehlgeschlagen.');}
-}
-
-document.addEventListener('DOMContentLoaded', function(){
-  const q1 = document.getElementById('q1');
-  const total = document.getElementById('total');
-
-  q1.addEventListener('input', function(){
-    let value = q1.value;
-    if(value === ""){
-      total.textContent = "0";
-      return;
-    }
-    let qty = Number(value);
-    if(isNaN(qty) || qty < 1){ qty = 1; }
-    q1.value = qty;
-    total.textContent = qty;
-  });
-});
-</script>
-  <script>
-    // Erfolgsmeldung anzeigen, wenn ?success=1 in der URL steht
-    const urlParams = new URLSearchParams(window.location.search);
-    if(urlParams.get('success') === '1'){
-      const box = document.createElement('div');
-      box.style.background = '#e6ffe6';
-      box.style.border = '1px solid #8bc34a';
-      box.style.padding = '14px';
-      box.style.borderRadius = '10px';
-      box.style.marginBottom = '18px';
-      box.innerHTML = '<strong>Vielen Dank!</strong><br>Ihre Bestellung wurde erfolgreich gesendet.';
-      document.querySelector('.container').prepend(box);
-    }
-  </script>
-</body>
-</html>
+      <div cla
