@@ -118,8 +118,7 @@ Name: ${name}
 Telefon: ${phone}
 E-Mail: ${email}`;
     const preview = document.getElementById('orderPreview');
-    if(preview) preview.innerHTML = `<div class="summary">${txt.replace(/
-/g,'<br>')}</div>`;
+    if(preview) preview.innerHTML = `<div class="summary">${txt.replace(/\n/g,'<br>')}</div>`;
   }catch(e){console.error('previewOrder error', e); alert('Vorschau konnte nicht erstellt werden. Öffne die Entwicklerkonsole für Details.');}
 }
 
