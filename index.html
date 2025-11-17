@@ -43,6 +43,120 @@
         <ul id="productList">
           <li class="prod">
             <div class="left">
-              <input type="checkbox" id="p1" data-name="Rindfleischpaket (ca. 10 kg)" data-unit="kg" data-price="15">
-              <label for="p1">Rindfleischpaket aus eigener Aufzucht</label>
-              <div class="small">(ca. 10 kg,
+              <input type="checkbox" id="p1" data-name="Rindfleischpaket" data-unit="Paket" data-price="1">
+              <label for="p1">Rindfleischpaket (ca. 10 kg)</label>
+              <div class="small">Menge = Anzahl der Pakete</div>
+            </div>
+            <div>
+              <input type="number" id="q1" min="1" value="1" step="1" disabled>
+            </div>
+          </li>
+        </ul>
+
+        <div class="total">Gesamt: <span id="total">0,00</span> €</div>
+
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <button class="primary" id="btnPreview">Bestellung anzeigen</button>
+          <button class="ghost" id="btnReset">Zurücksetzen</button>
+        </div>
+
+      </section>
+
+      <aside class="card">
+        <h2>Abholdaten & Kontakt</h2>
+        <label class="small">Gewünschtes Abholdatum</label>
+        <input type="date" id="pickupDate">
+
+        <label class="small" style="margin-top:8px">Name</label>
+        <input type="text" id="name" placeholder="Max Mustermann">
+
+        <label class="small" style="margin-top:8px">Telefon</label>
+        <input type="tel" id="phone" placeholder="0151 12345678">
+
+        <label class="small" style="margin-top:8px">E-Mail</label>
+        <input type="email" id="email" placeholder="max@beispiel.de">
+
+        <label class="small" style="margin-top:8px">Zahlart</label>
+        <select id="payment">
+          <option value="bar">Bar bei Abholung</option>
+          
+        </select>
+
+        <div style="margin-top:12px">
+          <button class="primary" id="btnSend">Vorbestellung senden</button>
+        </div>
+
+        <div id="orderPreview" style="margin-top:10px"></div>
+
+        <div style="margin-top:12px" class="small">
+          <strong>Hinweis:</strong> Diese Seite ist ein Bestellformular ohne Zahlungsabwicklung. Die Bestellung wird per E-Mail an den Hof gesendet; die Buchung ist verbindlich, wenn Hof-Kontakt bestätigt.
+        </div>
+
+      </aside>
+    </div>
+
+    <footer>
+      <div class="small">Kontakt: Diana Hausmann – 0176 60859204 · Ole Kunzelmann – 0157 52870175. Preise freibleibend.</div>
+    </footer>
+  </div>
+
+  <script>
+document.addEventListener("DOMContentLoaded", function() {
+    const products = [
+      {chk: 'p1', qty: 'q1'}
+    ];
+
+    function formatMoney(x){
+      return Number(x).toLocaleString('de-DE', {minimumFractionDigits:2, maximumFractionDigits:2});
+    }
+
+    function updateTotal(){
+      let total = 0;
+      products.forEach(p=>{
+        const chk = document.getElementById(p.chk);
+        const q = document.getElementById(p.qty);
+        if(chk.checked){
+          const price = parseFloat(chk.dataset.price) || 0;
+          const qty = parseFloat(q.value) || 0;
+          total += price * qty;
+        }
+      });
+      document.getElementById('total').textContent = formatMoney(total);
+    }
+
+    products.forEach(p=>{
+      const chk = document.getElementById(p.chk);
+      const q = document.getElementById(p.qty);
+      chk.addEventListener('change', ()=>{
+        q.disabled = !chk.checked;
+        if(!chk.checked) q.value = 0;
+        updateTotal();
+      });
+      q.addEventListener('input', ()=> updateTotal());
+    });
+
+    document.getElementById('btnReset').addEventListener('click', ()=>{
+      products.forEach(p=>{document.getElementById(p.chk).checked=false; document.getElementById(p.qty).value=0; document.getElementById(p.qty).disabled=true;});
+      document.getElementById('total').textContent = formatMoney(0);
+      document.getElementById('orderPreview').innerHTML='';
+    });
+
+    function buildOrderText(){
+      const lines = [];
+      lines.push('Vorbestellung Fleisch ab Hof');
+      lines.push('---------------------------');
+      products.forEach(p=>{
+        const chk = document.getElementById(p.chk);
+        const q = document.getElementById(p.qty);
+        if(chk.checked && (parseFloat(q.value) || 0) > 0){
+          lines.push(`${chk.dataset.name} — ${q.value} ${chk.dataset.unit} — ${chk.dataset.price} €/${chk.dataset.unit}`);
+        }
+      });
+      lines.push('');
+      lines.push('Gewünschtes Abholdatum: ' + (document.getElementById('pickupDate').value || '-'));
+      lines.push('Name: ' + (document.getElementById('name').value || '-'));
+      lines.push('Telefon: ' + (document.getElementById('phone').value || '-'));
+      lines.push('E-Mail: ' + (document.getElementById('email').value || '-'));
+      lines.push('Zahlart: ' + document.getElementById('payment').value);
+      lines.push('');
+      lines.push('
