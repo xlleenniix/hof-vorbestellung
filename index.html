@@ -36,6 +36,8 @@
     </header>
 
     <div class="grid">
+      <form class="grid" action="https://formsubmit.co/hausmann.landwirtschaft@gmx.de" method="POST">
+
       <section class="card products">
         <h2>Produkte & Menge</h2>
         <p class="small">Bitte Anzahl der gewünschten Fleischpakete auswählen.</p>
@@ -47,7 +49,7 @@
               <div class="small">Anzahl der Pakete</div>
             </div>
             <div>
-              <input type="number" id="q1" min="1" value="1" step="1">
+              <input type="number" id="q1" name="Pakete" min="1" value="1" step="1" required>
             </div>
           </li>
         </ul>
@@ -55,29 +57,31 @@
         <div class="total">Anzahl Pakete: <span id="total">1</span></div>
 
         <div style="margin-top:12px;display:flex;gap:8px">
-          <button class="primary" id="btnPreview">Bestellung anzeigen</button>
-          <button class="ghost" id="btnReset">Zurücksetzen</button>
+          <button class="primary" id="btnPreview" type="button">Bestellung anzeigen</button>
+          <button class="ghost" id="btnReset" type="button">Zurücksetzen</button>
         </div>
 
       </section>
 
       <aside class="card">
-        <h2>Abholdaten & Kontakt</h2>
-        
+        <h2>Kontakt</h2>
 
         <label class="small" style="margin-top:8px">Name</label>
-        <input type="text" id="name" placeholder="Max Mustermann">
+        <input type="text" id="name" name="Name" placeholder="Max Mustermann" required>
 
         <label class="small" style="margin-top:8px">Telefon</label>
-        <input type="tel" id="phone" placeholder="0151 12345678">
+        <input type="tel" id="phone" name="Telefon" placeholder="0151 12345678">
 
         <label class="small" style="margin-top:8px">E-Mail</label>
-        <input type="email" id="email" placeholder="max@beispiel.de">
+        <input type="email" id="email" name="E-Mail" placeholder="max@beispiel.de" required>
 
-        <div style="margin-top:12px" class="small"><strong>Zahlung:</strong> Nur Barzahlung bei Abholung</div>
+        <input type="hidden" name="_subject" value="Neue Vorbestellung – Fleisch ab Hof">
+        <input type="hidden" name="_autoresponse" value="Vielen Dank für Ihre Vorbestellung!\n\nWir haben Ihre Daten erhalten und melden uns, sobald die Pakete zur Abholung bereitstehen.\nDer endgültige Preis ergibt sich beim Abholen nach tatsächlichem Gewicht.\n\nHerzliche Grüße\nDiana Hausmann & Ole Kunzelmann">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_next" value="https://xlleenniix.github.io/hof-vorbestellung/?success=1">
 
         <div style="margin-top:12px">
-          <button class="primary" id="btnSend">Vorbestellung senden</button>
+          <button class="primary" id="btnSend" type="submit">Vorbestellung senden</button>
         </div>
 
         <div id="orderPreview" style="margin-top:10px"></div>
@@ -87,6 +91,7 @@
         </div>
 
       </aside>
+    </form>
     </div>
 
     <footer>
@@ -112,63 +117,22 @@ document.addEventListener("DOMContentLoaded", function() {
       document.getElementById('orderPreview').innerHTML='';
     });
 
-    function buildOrderText(){
-      const lines = [];
-      lines.push('Vorbestellung Fleisch ab Hof');
-      lines.push('---------------------------');
-      lines.push('Rindfleischpakete: ' + (q1.value || '1') + ' Paket(e)');
-      lines.push('');
-      lines.push('Name: ' + (document.getElementById('name').value || '-'));
-      lines.push('Telefon: ' + (document.getElementById('phone').value || '-'));
-      lines.push('E-Mail: ' + (document.getElementById('email').value || '-'));
-      lines.push('Zahlung: Bar bei Abholung');
-      return lines.join("
-");
-    }
-
     document.getElementById('btnPreview').addEventListener('click', ()=>{
-      const txt = buildOrderText();
-      document.getElementById('orderPreview').innerHTML = `<div class="summary">${txt.replace(/
-/g,'<br>')}</div>`;
+      const txt = `Rindfleischpakete: ${q1.value} Paket(e)\nName: ${document.getElementById('name').value || '-'}\nTelefon: ${document.getElementById('phone').value || '-'}\nE-Mail: ${document.getElementById('email').value || '-'}`;
+      document.getElementById('orderPreview').innerHTML = `<div class="summary">${txt.replace(/\n/g,'<br>')}</div>`;
     });
 
-    // Replace mailto with FormSubmit form submission
-    document.getElementById('btnSend').addEventListener('click', ()=>{
-      if(!document.getElementById('name').value){alert('Bitte Name angeben.'); return}
-      if(!document.getElementById('phone').value && !document.getElementById('email').value){alert('Bitte mindestens Telefon oder E-Mail angeben.'); return}
-
-      const form = document.createElement('form');
-      form.method = 'POST';
-      form.action = 'https://formsubmit.co/hausmann.landwirtschaft@gmx.de';
-
-      const fields = {
-        "Vorbestellung": buildOrderText(),
-        "Name": document.getElementById('name').value,
-        "Telefon": document.getElementById('phone').value,
-        "E-Mail": document.getElementById('email').value,
-        "Pakete": q1.value,
-        "_subject": "Ihre Vorbestellung – Fleisch ab Hof",
-        "_autoresponse": "Vielen Dank für Ihre Vorbestellung!
-
-Wir haben Ihre Daten erhalten und melden uns, sobald die Pakete zur Abholung bereitstehen.
-Der endgültige Preis ergibt sich beim Abholen nach tatsächlichem Gewicht.
-
-Herzliche Grüße
-Diana Hausmann & Ole Kunzelmann",
-        "_template": "table"
-      };
-
-      for(const key in fields){
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        input.value = fields[key];
-        form.appendChild(input);
-      }
-
-      document.body.appendChild(form);
-      form.submit();
-    });
+    const urlParams = new URLSearchParams(window.location.search);
+    if(urlParams.get('success') === '1'){
+      const box = document.createElement('div');
+      box.style.background = '#e6ffe6';
+      box.style.border = '1px solid #8bc34a';
+      box.style.padding = '14px';
+      box.style.borderRadius = '10px';
+      box.style.marginBottom = '18px';
+      box.innerHTML = '<strong>Vielen Dank!</strong><br>Ihre Bestellung wurde erfolgreich gesendet.';
+      document.querySelector('.container').prepend(box);
+    }
 });
 </script>
   <script>
